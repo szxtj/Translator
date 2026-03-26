@@ -2,6 +2,10 @@
 
 Minimal local macOS translator using SwiftUI, AppKit, `NSPanel`, and LM Studio.
 
+## License
+
+MIT. See [LICENSE](LICENSE).
+
 ## Open In Xcode
 
 1. Open Xcode.
