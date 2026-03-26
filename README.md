@@ -27,6 +27,32 @@ swift build
 swift test
 ```
 
+## Release DMG
+
+Create a local release build and DMG:
+
+```bash
+chmod +x scripts/release_dmg.sh
+./scripts/release_dmg.sh
+```
+
+With explicit version and build number:
+
+```bash
+./scripts/release_dmg.sh 1.0.0 1
+```
+
+The generated files will be placed in `dist/`:
+
+- `dist/Translator.app`
+- `dist/Translator.dmg`
+
+Optional signing for local distribution:
+
+```bash
+SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" ./scripts/release_dmg.sh 1.0.0 1
+```
+
 ## Notes
 
 - The app hides its Dock icon at launch by setting the activation policy to `.accessory`.
