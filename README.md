@@ -33,6 +33,8 @@ swift test
 
 ## Release DMG
 
+Project version is tracked in [`VERSION`](VERSION). Update that file before cutting a new release.
+
 Create a local release build and DMG:
 
 ```bash
@@ -44,6 +46,13 @@ With explicit version and build number:
 
 ```bash
 ./scripts/release_dmg.sh 1.0.0 1
+```
+
+Recommended release flow:
+
+```bash
+echo "1.0.1" > VERSION
+./scripts/release_dmg.sh 1.0.1 2
 ```
 
 The generated files will be placed in `dist/`:

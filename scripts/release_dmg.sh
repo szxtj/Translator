@@ -11,8 +11,15 @@ DMG_STAGING_DIR="${DIST_DIR}/dmg-staging"
 DMG_PATH="${DIST_DIR}/${APP_NAME}.dmg"
 INFO_PLIST_SOURCE="${ROOT_DIR}/Sources/Translator/Resources/Info.plist"
 ICON_SOURCE="${ROOT_DIR}/Sources/Translator/Resources/AppIcon.icns"
+VERSION_FILE="${ROOT_DIR}/VERSION"
 
-VERSION="${1:-1.0.0}"
+if [[ -f "${VERSION_FILE}" ]]; then
+  DEFAULT_VERSION="$(tr -d '[:space:]' < "${VERSION_FILE}")"
+else
+  DEFAULT_VERSION="1.0.0"
+fi
+
+VERSION="${1:-$DEFAULT_VERSION}"
 BUILD_NUMBER="${2:-1}"
 SIGN_IDENTITY="${SIGN_IDENTITY:-}"
 
@@ -61,5 +68,6 @@ hdiutil create \
 
 echo
 echo "Done."
+echo "Version: ${VERSION} (${BUILD_NUMBER})"
 echo "App: ${APP_DIR}"
 echo "DMG: ${DMG_PATH}"
