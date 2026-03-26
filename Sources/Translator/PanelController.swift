@@ -10,6 +10,7 @@ final class PanelController {
 
     private let viewModel: TranslatorViewModel
     private var panel: SpotlightPanel?
+    private var shouldCenterAfterNextResize = false
 
     init(viewModel: TranslatorViewModel) {
         self.viewModel = viewModel
@@ -18,6 +19,7 @@ final class PanelController {
     func show() {
         let panel = panel ?? makePanel()
         self.panel = panel
+        shouldCenterAfterNextResize = true
 
         center(panel)
         NSApp.activate(ignoringOtherApps: true)
@@ -72,8 +74,9 @@ final class PanelController {
             onPreferredHeightChange: { [weak panel] height in
                 let targetHeight = max(Layout.minHeight, height)
                 panel?.setContentSize(NSSize(width: Layout.width, height: targetHeight))
-                if let panel {
+                if let panel, self.shouldCenterAfterNextResize {
                     self.center(panel)
+                    self.shouldCenterAfterNextResize = false
                 }
             },
             onClose: { [weak self] in

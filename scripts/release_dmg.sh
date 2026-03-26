@@ -10,6 +10,7 @@ APP_DIR="${DIST_DIR}/${APP_BUNDLE_NAME}"
 DMG_STAGING_DIR="${DIST_DIR}/dmg-staging"
 DMG_PATH="${DIST_DIR}/${APP_NAME}.dmg"
 INFO_PLIST_SOURCE="${ROOT_DIR}/Sources/Translator/Resources/Info.plist"
+ICON_SOURCE="${ROOT_DIR}/Sources/Translator/Resources/AppIcon.icns"
 
 VERSION="${1:-1.0.0}"
 BUILD_NUMBER="${2:-1}"
@@ -32,6 +33,7 @@ mkdir -p "${APP_DIR}/Contents/MacOS" "${APP_DIR}/Contents/Resources"
 
 cp "${BINARY_PATH}" "${APP_DIR}/Contents/MacOS/${APP_NAME}"
 cp "${INFO_PLIST_SOURCE}" "${APP_DIR}/Contents/Info.plist"
+cp "${ICON_SOURCE}" "${APP_DIR}/Contents/Resources/AppIcon.icns"
 
 /usr/libexec/PlistBuddy -c "Set :CFBundleExecutable ${APP_NAME}" "${APP_DIR}/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleName ${APP_NAME}" "${APP_DIR}/Contents/Info.plist"
