@@ -14,13 +14,21 @@ ICON_SOURCE="${ROOT_DIR}/Sources/Translator/Resources/AppIcon.icns"
 VERSION_FILE="${ROOT_DIR}/VERSION"
 
 if [[ -f "${VERSION_FILE}" ]]; then
-  DEFAULT_VERSION="$(tr -d '[:space:]' < "${VERSION_FILE}")"
+  RAW_VERSION="$(tr -d '[:space:]' < "${VERSION_FILE}")"
 else
-  DEFAULT_VERSION="1.0.0"
+  RAW_VERSION="1.0.0"
+fi
+
+if [[ "${RAW_VERSION}" == *+* ]]; then
+  DEFAULT_VERSION="${RAW_VERSION%%+*}"
+  DEFAULT_BUILD_NUMBER="${RAW_VERSION##*+}"
+else
+  DEFAULT_VERSION="${RAW_VERSION}"
+  DEFAULT_BUILD_NUMBER="1"
 fi
 
 VERSION="${1:-$DEFAULT_VERSION}"
-BUILD_NUMBER="${2:-1}"
+BUILD_NUMBER="${2:-$DEFAULT_BUILD_NUMBER}"
 SIGN_IDENTITY="${SIGN_IDENTITY:-}"
 
 echo "Building ${APP_NAME} in release mode..."
