@@ -10,7 +10,6 @@ final class PanelController {
 
     private let viewModel: TranslatorViewModel
     private var panel: SpotlightPanel?
-    private var shouldCenterAfterNextResize = false
 
     init(viewModel: TranslatorViewModel) {
         self.viewModel = viewModel
@@ -19,7 +18,6 @@ final class PanelController {
     func show() {
         let panel = panel ?? makePanel()
         self.panel = panel
-        shouldCenterAfterNextResize = true
 
         center(panel)
         NSApp.activate(ignoringOtherApps: true)
@@ -29,6 +27,7 @@ final class PanelController {
 
     func hide() {
         panel?.orderOut(nil)
+        viewModel.stopSpeech()
     }
 
     func toggle() {
@@ -71,12 +70,11 @@ final class PanelController {
 
         let rootView = MainView(
             viewModel: viewModel,
-            onPreferredHeightChange: { [weak panel] height in
+            onPreferredHeightChange: { [weak self, weak panel] height in
+                guard let self, let panel else { return }
                 let targetHeight = max(Layout.minHeight, height)
-                panel?.setContentSize(NSSize(width: Layout.width, height: targetHeight))
-                if let panel, self.shouldCenterAfterNextResize {
-                    self.center(panel)
-                    self.shouldCenterAfterNextResize = false
+                if abs(panel.frame.height - targetHeight) > 0.5 {
+                    self.resize(panel, toHeight: targetHeight)
                 }
             },
             onClose: { [weak self] in
@@ -86,6 +84,14 @@ final class PanelController {
 
         panel.contentViewController = NSHostingController(rootView: rootView)
         return panel
+    }
+
+    private func resize(_ panel: NSPanel, toHeight targetHeight: CGFloat) {
+        let currentFrame = panel.frame
+        let heightDiff = targetHeight - currentFrame.height
+        let newOrigin = NSPoint(x: currentFrame.origin.x, y: currentFrame.origin.y - heightDiff)
+        let newFrame = NSRect(origin: newOrigin, size: NSSize(width: currentFrame.width, height: targetHeight))
+        panel.setFrame(newFrame, display: true, animate: false)
     }
 
     private func center(_ panel: NSPanel) {

@@ -73,6 +73,15 @@ struct MainView: View {
 
                 Spacer()
 
+                Button(action: {
+                    viewModel.toggleSpeech()
+                }) {
+                    Image(systemName: "speaker.wave.2.fill")
+                }
+                .buttonStyle(.bordered)
+                .disabled(viewModel.outputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .help("Speak Translation")
+
                 Button("Copy") {
                     viewModel.copyResult()
                 }

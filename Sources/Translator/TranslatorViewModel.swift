@@ -1,5 +1,6 @@
 import AppKit
 import Foundation
+import Combine
 
 @MainActor
 final class TranslatorViewModel: ObservableObject {
@@ -9,11 +10,24 @@ final class TranslatorViewModel: ObservableObject {
     @Published var selectedMode: TranslationMode = .auto
     @Published var errorMessage: String?
     @Published private(set) var focusToken = 0
+    @Published var isSpeaking = false
 
     private let service: TranslationServiceProtocol
+    private let speechManager = SpeechManager()
+    private var cancellables = Set<AnyCancellable>()
 
     init(service: TranslationServiceProtocol) {
         self.service = service
+
+        speechManager.$isSpeaking
+            .assign(to: \.isSpeaking, on: self)
+            .store(in: &cancellables)
+
+        $inputText
+            .sink { [weak self] _ in
+                self?.stopSpeech()
+            }
+            .store(in: &cancellables)
     }
 
     func submit() {
@@ -27,6 +41,7 @@ final class TranslatorViewModel: ObservableObject {
         guard !trimmedInput.isEmpty else { return }
         guard !isLoading else { return }
 
+        stopSpeech()
         isLoading = true
         errorMessage = nil
 
@@ -50,6 +65,14 @@ final class TranslatorViewModel: ObservableObject {
 
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(trimmedOutput, forType: .string)
+    }
+
+    func toggleSpeech() {
+        speechManager.speak(text: outputText)
+    }
+
+    func stopSpeech() {
+        speechManager.stop()
     }
 
     private static func message(for error: Error) -> String {
