@@ -1,6 +1,31 @@
 # Translator
 
-Minimal local macOS translator using SwiftUI, AppKit, `NSPanel`, and LM Studio, featuring offline Text-to-Speech (TTS).
+English | [简体中文](README_zh.md)
+
+Minimal local macOS translator using SwiftUI, AppKit, `NSPanel`, and LM Studio, featuring offline Text-to-Speech (TTS), real-time bilingual subtitles, and speech synthesis.
+
+---
+
+## System Requirements & Run Environment
+
+To build and run this application successfully, please ensure your setup meets the following prerequisites:
+
+### 1. OS Version Requirements
+- **macOS 15.0 (Sequoia) or later**: The live subtitles system relies on the native local `Translation` framework and modern SwiftUI APIs introduced in macOS Sequoia.
+
+### 2. Compilation Toolchains
+- **Xcode 26.0 or later** / **Swift 6.0 toolchain**: Required to support strict concurrency checks and build modern language features.
+
+### 3. LLM Translation Backend (LM Studio)
+- **LM Studio Server active**: The text translator panel communicates with a local LLM instance.
+  - **Endpoint**: `http://localhost:1234/v1/responses`
+  - **Model ID**: `local-model`
+  - Ensure your local model is loaded and the server is running before attempting translations.
+
+### 4. On-Device Translation Assets (For Live Subtitles)
+- The offline translation session requires local language assets. Go to **System Settings > General > Language & Region > Translation Languages** on your Mac, and ensure that both **English** and **Chinese (Simplified)** translation packages are fully downloaded.
+
+---
 
 ## Features
 

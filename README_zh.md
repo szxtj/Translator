@@ -1,0 +1,101 @@
+# Translator
+
+[English](README.md) | 简体中文
+
+基于 SwiftUI、AppKit (`NSPanel`) 和 LM Studio 运行的极简本地 macOS 翻译助手，并支持本地离线语音转写、实时中英双语字幕和离线文本朗读（TTS）。
+
+---
+
+## 📋 系统要求与运行环境
+
+为了使应用能够正常运行及成功编译，请确保您的系统和开发环境满足以下条件：
+
+### 1. 系统版本要求
+*   **macOS 15.0 (Sequoia) 或更高版本**：应用中的实时双语字幕功能依赖 macOS 15 引入的原生 `Translation` 框架以及最新的 SwiftUI 渲染引擎。
+
+### 2. 开发与编译环境
+*   **Xcode 26.0 或更高版本** / **Swift 6.0 编译工具链**：用于支持 Swift 6 严格并发检查（Strict Concurrency）以及现代语言特性编译。
+
+### 3. 翻译后端服务 (LM Studio)
+*   **LM Studio 服务运行中**：主翻译界面依赖本地运行的 LLM 后端。
+    *   **服务端口**：`http://localhost:1234`
+    *   **接口路径**：`/v1/responses`
+    *   **加载模型名称**：`local-model`
+    *   请在测试翻译前确保您的本地模型已加载且 API 服务已开启。
+
+### 4. 离线翻译模型包 (实时字幕必备)
+*   实时双语字幕依赖系统内置的离线翻译引擎。为了确保离线转译正常运行，请前往 **系统设置 > 通用 > 语言与地区 > 翻译语言** (System Settings > General > Language & Region > Translation Languages)，提前下载安装 **“英语”** 和 **“中文（简体）”** 的离线翻译包。
+
+---
+
+## ✨ 功能特性
+
+- **本地 LLM 翻译：** 基于本地运行的 LM Studio 作为模型后端，保障翻译数据隐私安全。
+- **离线语音朗读 (TTS)：** 使用 macOS 系统原生的语音合成技术进行文本朗读。
+- **自动语种识别：** 利用 `NaturalLanguage` 框架自动判定文本语种（英文/中文），并智能切换对应的男/女声音频输出。
+- **浮动输入视窗 (类似 Spotlight)：** 全局快捷键唤醒，默认居中且在输入时自适应向下延展，失焦自动隐退。
+- **自定义全局热键：** 集成 `KeyboardShortcuts`，支持用户在设置中自定义全局唤醒快捷键。
+- **实时双语字幕 (新)：** 捕获系统扬声器音轨，在本地离线将英文语音转写为文本，并实时生成中文翻译。字幕窗口支持鼠标拖拽移动、边缘任意拉伸缩放，并自带鼠标移出自动半透明的渐隐效果。
+
+---
+
+## 🚀 编译与调试
+
+### 1. 使用 Xcode 运行
+1. 打开 Xcode。
+2. 选择菜单栏 `File > Open...` 并选中本项目根目录或 `Package.swift`。
+3. 等待 Swift Package 依赖解析完成。
+4. 在上方 Scheme 列表中选择 `Translator` 和 `My Mac`。
+5. 点击 `Run` (或按 `Cmd + R`) 运行。
+
+应用运行后会作为状态栏图标小工具存在。使用默认快捷键 `Control + Space` 可唤起主翻译面板。
+
+### 2. 命令行开发
+```bash
+swift build
+swift test
+```
+
+---
+
+## 📦 生产发布包构建 (DMG)
+
+项目版本在 [`VERSION`](VERSION) 文件中进行管理，构建脚本支持符合 `主版本.子版本.修订号+构建号`（例如 `1.2.0+3`）的格式。
+
+### 1. 本地打包发布流程
+
+```bash
+chmod +x scripts/release_dmg.sh
+./scripts/release_dmg.sh
+```
+
+### 2. 手动指定版本号与构建号
+```bash
+./scripts/release_dmg.sh 1.2.0 3
+```
+
+打包完成后，生成的安装产物会存放在项目根目录下的 `dist/` 目录中：
+*   `dist/Translator.app` (应用包)
+*   `dist/Translator.dmg` (安装镜像盘)
+
+### 3. 可选：附带开发者签名打包
+```bash
+SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" ./scripts/release_dmg.sh
+```
+
+---
+
+## 🎹 键盘快捷键说明
+
+*   `Enter`：提交/发送文本进行翻译。
+*   `Shift + Enter`：在输入框内插入换行符而不触发提交。
+*   `Escape`：隐藏主翻译面板（同时会自动终止当前正在播放的朗读音频）。
+
+## 📝 开发备注
+*   应用在启动时会通过将激活策略设置为 `.accessory` 来隐藏其 Dock 栏图标，使其完全作为后台小工具运行。
+*   `Sources/Translator/Resources/Info.plist` 是为今后若要将本 Swift Package 转化为标准 Xcode 完整 App 工程而预留的支持性文件。
+
+---
+
+## 📄 授权协议
+本项目基于 [MIT](LICENSE) 协议开源。
