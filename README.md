@@ -9,6 +9,7 @@ Minimal local macOS translator using SwiftUI, AppKit, `NSPanel`, and LM Studio, 
 - **Automatic Language Detection:** Uses the `NaturalLanguage` framework to automatically identify target language (English/Chinese) and select corresponding voices.
 - **Overlay Window (Spotlight-like):** Activates via a global shortcut and stays anchored at the top-left, expanding downwards naturally during typing.
 - **Customizable Shortcut:** Uses `KeyboardShortcuts` to customize global activator keys.
+- **Real-Time Bilingual Subtitles:** Captures system-wide loopback audio output, transcribes speech offline locally, and translates it to Chinese in real-time inside an interactive, resizable, and draggable translucent overlay.
 
 ## License
 
@@ -47,7 +48,7 @@ swift test
 
 ## Release DMG Packaging
 
-Project version is tracked in [`VERSION`](VERSION). The release build script supports versions in standard `VERSION+BUILD_NUMBER` formatting (e.g., `1.1.0+2`).
+Project version is tracked in [`VERSION`](VERSION). The release build script supports versions in standard `VERSION+BUILD_NUMBER` formatting (e.g., `1.2.0+3`).
 
 Create a local release build and DMG:
 
@@ -59,12 +60,12 @@ chmod +x scripts/release_dmg.sh
 With explicit version and build number overrides:
 
 ```bash
-./scripts/release_dmg.sh 1.1.0 2
+./scripts/release_dmg.sh 1.2.0 3
 ```
 
 Recommended release flow:
 
-1. Update the version in `VERSION` (e.g. `1.1.0+2`).
+1. Update the version in `VERSION` (e.g. `1.2.0+3`).
 2. Run the packaging script without arguments:
    ```bash
    ./scripts/release_dmg.sh

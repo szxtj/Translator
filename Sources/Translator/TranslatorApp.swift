@@ -11,6 +11,12 @@ struct TranslatorApp: App {
                 appState.openPanel()
             }
 
+            if #available(macOS 26.4, *) {
+                Button(appState.subtitleManager.isListening ? "Stop Subtitles" : "Start Subtitles") {
+                    appState.subtitleManager.toggle()
+                }
+            }
+
             Divider()
 
             Button("Quit") {
