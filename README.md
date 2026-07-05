@@ -53,6 +53,7 @@ The app runs as a menu bar utility. Use `Control + Space` (default) to toggle th
 
 ## Keyboard Shortcuts
 
+- `Control + Space` (Default): Toggle/wake up the translator panel.
 - `Enter`: Submit translation.
 - `Shift + Enter`: Insert a newline inside the input box without submitting.
 - `Escape`: Close/hide the translator panel (automatically silences any active reading).

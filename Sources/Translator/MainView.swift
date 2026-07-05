@@ -67,7 +67,7 @@ struct MainView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack {
-                Text("Enter to translate, Shift+Enter for newline, Esc to close.")
+                Text("Enter to translate, Shift+Enter for newline, Esc to close. (Shortcut: ⌃Space)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 

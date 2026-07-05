@@ -87,6 +87,7 @@ SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" ./scripts/release_d
 
 ## 🎹 键盘快捷键说明
 
+*   `Control + Space`（默认）：唤醒或隐藏主翻译面板。
 *   `Enter`：提交/发送文本进行翻译。
 *   `Shift + Enter`：在输入框内插入换行符而不触发提交。
 *   `Escape`：隐藏主翻译面板（同时会自动终止当前正在播放的朗读音频）。
