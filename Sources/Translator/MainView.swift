@@ -26,16 +26,30 @@ struct MainView: View {
             }
             .pickerStyle(.segmented)
 
-            InputTextView(
-                text: $viewModel.inputText,
-                focusToken: viewModel.focusToken,
-                isEditable: !viewModel.isLoading,
-                onSubmit: {
-                    viewModel.submit()
-                },
-                onEscape: onClose
-            )
-            .frame(height: inputHeight)
+            ZStack(alignment: .bottomTrailing) {
+                InputTextView(
+                    text: $viewModel.inputText,
+                    focusToken: viewModel.focusToken,
+                    isEditable: !viewModel.isLoading,
+                    onSubmit: {
+                        viewModel.submit()
+                    },
+                    onEscape: onClose
+                )
+                .frame(height: inputHeight)
+
+                Button(action: {
+                    viewModel.toggleInputSpeech()
+                }) {
+                    Image(systemName: viewModel.isSpeakingInput ? "speaker.wave.3.fill" : "speaker.wave.2.fill")
+                        .foregroundColor(viewModel.isSpeakingInput ? .accentColor : .primary)
+                }
+                .buttonStyle(.bordered)
+                .disabled(viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .padding(.trailing, 8)
+                .padding(.bottom, 8)
+                .help("Speak Input")
+            }
 
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
@@ -76,7 +90,8 @@ struct MainView: View {
                 Button(action: {
                     viewModel.toggleSpeech()
                 }) {
-                    Image(systemName: "speaker.wave.2.fill")
+                    Image(systemName: viewModel.isSpeakingOutput ? "speaker.wave.3.fill" : "speaker.wave.2.fill")
+                        .foregroundColor(viewModel.isSpeakingOutput ? .accentColor : .primary)
                 }
                 .buttonStyle(.bordered)
                 .disabled(viewModel.outputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)

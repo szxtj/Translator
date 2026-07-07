@@ -30,7 +30,7 @@ To build and run this application successfully, please ensure your setup meets t
 ## Features
 
 - **Local Translation:** Translates text offline using LM Studio as the LLM backend.
-- **Offline Text-to-Speech (TTS):** Reads translation results aloud using macOS native speech synthesis.
+- **Offline Text-to-Speech (TTS):** Reads both input text and translation results aloud using macOS native speech synthesis, featuring dynamic icon state changes while speaking.
 - **Automatic Language Detection:** Uses the `NaturalLanguage` framework to automatically identify target language (English/Chinese) and select corresponding voices.
 - **Overlay Window (Spotlight-like):** Activates via a global shortcut and stays anchored at the top-left, expanding downwards naturally during typing.
 - **Customizable Shortcut:** Uses `KeyboardShortcuts` to customize global activator keys.
@@ -74,7 +74,7 @@ swift test
 
 ## Release DMG Packaging
 
-Project version is tracked in [`VERSION`](VERSION). The release build script supports versions in standard `VERSION+BUILD_NUMBER` formatting (e.g., `1.2.0+3`).
+Project version is tracked in [`VERSION`](VERSION). The release build script supports versions in standard `VERSION+BUILD_NUMBER` formatting (e.g., `1.2.1+4`).
 
 Create a local release build and DMG:
 
@@ -86,12 +86,12 @@ chmod +x scripts/release_dmg.sh
 With explicit version and build number overrides:
 
 ```bash
-./scripts/release_dmg.sh 1.2.0 3
+./scripts/release_dmg.sh 1.2.1 4
 ```
 
 Recommended release flow:
 
-1. Update the version in `VERSION` (e.g. `1.2.0+3`).
+1. Update the version in `VERSION` (e.g. `1.2.1+4`).
 2. Run the packaging script without arguments:
    ```bash
    ./scripts/release_dmg.sh

@@ -38,7 +38,7 @@ struct InputTextView: NSViewRepresentable {
         textView.font = .systemFont(ofSize: 16)
         textView.delegate = context.coordinator
         textView.string = text
-        textView.textContainerInset = NSSize(width: 8, height: 10)
+        textView.textContainerInset = NSSize(width: 8, height: 12)
         textView.allowsUndo = true
         textView.onSubmit = onSubmit
         textView.onEscape = onEscape

@@ -11,6 +11,8 @@ final class TranslatorViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published private(set) var focusToken = 0
     @Published var isSpeaking = false
+    @Published var isSpeakingInput = false
+    @Published var isSpeakingOutput = false
 
     private let service: TranslationServiceProtocol
     private let speechManager = SpeechManager()
@@ -20,7 +22,14 @@ final class TranslatorViewModel: ObservableObject {
         self.service = service
 
         speechManager.$isSpeaking
-            .assign(to: \.isSpeaking, on: self)
+            .sink { [weak self] isSpeaking in
+                guard let self = self else { return }
+                self.isSpeaking = isSpeaking
+                if !isSpeaking {
+                    self.isSpeakingInput = false
+                    self.isSpeakingOutput = false
+                }
+            }
             .store(in: &cancellables)
 
         $inputText
@@ -68,7 +77,23 @@ final class TranslatorViewModel: ObservableObject {
     }
 
     func toggleSpeech() {
-        speechManager.speak(text: outputText)
+        if isSpeakingOutput {
+            stopSpeech()
+        } else {
+            isSpeakingInput = false
+            isSpeakingOutput = true
+            speechManager.speak(text: outputText)
+        }
+    }
+
+    func toggleInputSpeech() {
+        if isSpeakingInput {
+            stopSpeech()
+        } else {
+            isSpeakingInput = true
+            isSpeakingOutput = false
+            speechManager.speak(text: inputText)
+        }
     }
 
     func stopSpeech() {
