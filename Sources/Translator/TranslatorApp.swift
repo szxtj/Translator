@@ -19,6 +19,14 @@ struct TranslatorApp: App {
 
             Divider()
 
+            Button("Settings...") {
+                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                NSApp.activate(ignoringOtherApps: true)
+            }
+            .keyboardShortcut(",")
+
+            Divider()
+
             Button("Quit") {
                 NSApp.terminate(nil)
             }
@@ -27,7 +35,7 @@ struct TranslatorApp: App {
         .menuBarExtraStyle(.menu)
 
         Settings {
-            EmptyView()
+            SettingsView()
         }
         .commands {
             CommandGroup(after: .pasteboard) {

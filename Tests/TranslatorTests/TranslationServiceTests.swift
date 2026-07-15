@@ -46,6 +46,73 @@ final class TranslationServiceTests: XCTestCase {
         XCTAssertEqual(result, "你好世界")
     }
 
+    func testStripsThinkingProcess() {
+        XCTAssertEqual(
+            TranslationService.stripThinkingProcess("<think>I am thinking\nabout this</think>Hello world"),
+            "Hello world"
+        )
+        XCTAssertEqual(
+            TranslationService.stripThinkingProcess("<thought>Analyzing...</thought>Hello!"),
+            "Hello!"
+        )
+        XCTAssertEqual(
+            TranslationService.stripThinkingProcess("<think>Oops incomplete tag"),
+            ""
+        )
+        XCTAssertEqual(
+            TranslationService.stripThinkingProcess("No thinking tags at all"),
+            "No thinking tags at all"
+        )
+    }
+
+    func testExtractsOpenAIChatCompletions() throws {
+        let data = #"""
+        {
+          "choices": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "<think>some thought</think>Actual Translation result"
+              }
+            }
+          ]
+        }
+        """#.data(using: .utf8)!
+
+        let result = try TranslationService.extractTranslation(from: data)
+        XCTAssertEqual(result, "Actual Translation result")
+    }
+
+    func testExtractsTranslationFromLMStudioReasoningResponse() throws {
+        let jsonString = #"""
+        {
+          "output": [
+            {
+              "type": "reasoning",
+              "content": [
+                {
+                  "type": "reasoning_text",
+                  "text": "Thinking Process:\n1. Translate..."
+                }
+              ]
+            },
+            {
+              "type": "message",
+              "content": [
+                {
+                  "type": "output_text",
+                  "text": "Will you walk this long road with me?"
+                }
+              ]
+            }
+          ]
+        }
+        """#
+        let data = jsonString.data(using: .utf8)!
+        let result = try TranslationService.extractTranslation(from: data)
+        XCTAssertEqual(result, "Will you walk this long road with me?")
+    }
+
     func testThrowsForInvalidPayload() {
         let data = #"{"status":"ok"}"#.data(using: .utf8)!
 
