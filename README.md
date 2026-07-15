@@ -16,10 +16,10 @@ To build and run this application successfully, please ensure your setup meets t
 ### 2. Compilation Toolchains
 - **Xcode 26.0 or later** / **Swift 6.0 toolchain**: Required to support strict concurrency checks and build modern language features.
 
-### 3. LLM Translation Backend (LM Studio)
-- **LM Studio Server active**: The text translator panel communicates with a local LLM instance.
-  - **Endpoint**: `http://localhost:1234/v1/responses`
-  - **Model ID**: `local-model`
+### 3. LLM Translation Backend (LM Studio or compatible)
+- **Local Server active**: The text translator panel communicates with a local LLM instance.
+  - **API Base URL**: `http://localhost:1234/v1` (Default, fully customizable in App Settings)
+  - **Model ID**: `local-model` (Default, auto-resolves to loaded model, or explicitly chosen in App Settings)
   - Ensure your local model is loaded and the server is running before attempting translations.
 
 ### 4. On-Device Translation Assets (For Live Subtitles)
@@ -58,12 +58,14 @@ The app runs as a menu bar utility. Use `Control + Space` (default) to toggle th
 - `Shift + Enter`: Insert a newline inside the input box without submitting.
 - `Escape`: Close/hide the translator panel (automatically silences any active reading).
 
-## LM Studio Configuration
+## App Configuration & Settings
 
-- Endpoint: `http://localhost:1234/v1/responses`
-- Model: `local-model`
+You can open the settings window via the Menu Bar menu.
 
-Make sure LM Studio is running and that the server endpoint is enabled before testing translation.
+- **API Base URL**: Configures the connection to your local model server (defaults to `http://localhost:1234/v1` for LM Studio, but supports Ollama, custom ports, etc.).
+- **Model Selection**: Automatically queries the server (`GET /v1/models`) to retrieve and list all loaded models, allowing you to explicitly select which model to use.
+- **Inference Temperature**: Controls creativity/randomness (defaults to `0.2`).
+- **Thinking/Reasoning**: Automatically strips `<think>...</think>` and `<thought>...</thought>` blocks from output displays, ensuring translation results are always clean.
 
 ## Command Line Development
 

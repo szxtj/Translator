@@ -23,14 +23,12 @@ struct TranslatorApp: App {
                 NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
                 NSApp.activate(ignoringOtherApps: true)
             }
-            .keyboardShortcut(",")
 
             Divider()
 
             Button("Quit") {
                 NSApp.terminate(nil)
             }
-            .keyboardShortcut("q")
         }
         .menuBarExtraStyle(.menu)
 
