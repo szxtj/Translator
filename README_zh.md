@@ -29,7 +29,9 @@
 
 ## ✨ 功能特性
 
-- **本地 LLM 翻译：** 基于本地运行的 LM Studio 作为模型后端，保障翻译数据隐私安全。
+- **本地与云端大模型翻译：** 既支持本地运行的 LM Studio / Ollama 作为免 Key 模型后端，也支持通过配置 API Key 直连包括 DeepSeek 在内的标准 OpenAI 兼容的云端 API。
+- **详解模式 (新)：** 深度拆解输入的词汇或短语。输入英文时，提供多个中文释义、单单词的词性、以及高质量双语例句（不输出音标）；输入中文时，提供多个英文候选翻译、具体语境释义差异、以及双语对照例句。内容全部通过 Markdown 在 UI 中完美进行分行与排版渲染。
+- **云端 API 鉴权支持：** 支持在设置中输入可选的 API Key，请求时自动在 Header 中附带 `Authorization: Bearer <API_KEY>`，完美适配云端 DeepSeek 等平台的鉴权体系。
 - **离线语音朗读 (TTS)：** 支持对输入源文本与翻译结果进行双向本地语音朗读，并配有播放状态的动态高亮动效。
 - **自动语种识别：** 利用 `NaturalLanguage` 框架自动判定文本语种（英文/中文），并智能切换对应的男/女声音频输出。
 - **浮动输入视窗 (类似 Spotlight)：** 全局快捷键唤醒，默认居中且在输入时自适应向下延展，失焦自动隐退。
@@ -95,8 +97,9 @@ SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" ./scripts/release_d
 
 您可以点击状态栏图标菜单中的 **Settings...** 打开配置面板：
 
-*   **API Base URL (API 基准地址)**：配置本地模型服务的连接地址（LM Studio 默认使用 `http://localhost:1234/v1`，但也完美支持 Ollama、自定义端口等）。
-*   **Model Selection (模型选择)**：点击刷新按钮会自动查询服务端 (`GET /v1/models`) 以获取当前已加载的模型列表，允许您显式指定使用哪一个模型。
+*   **API Base URL (API 基准地址)**：配置模型服务的连接地址（LM Studio 默认使用 `http://localhost:1234/v1`，也完美支持 Ollama、自定义端口等，或配置为云端 DeepSeek 的地址 `https://api.deepseek.com`）。
+*   **API Key (API 密钥)**：为需要鉴权的云端 API 服务（如 DeepSeek 等）配置 API Key，将安全地以 Bearer Token 形式发送请求。
+*   **Model Selection (模型选择)**：点击刷新按钮会自动查询服务端 (`GET /v1/models`) 以获取当前已加载或可用的模型列表，允许您显式指定使用哪一个模型。
 *   **Temperature (温度)**：控制文本生成随机性/创意度（默认为 `0.2`）。
 *   **模型思考/推理过滤**：本应用会自动在 UI 层面清洗掉返回内容中的 `<think>...</think>` 以及 `<thought>...</thought>` 标签块，确保不论模型是否进行思考，展示在界面的翻译结果都是绝对纯净的。
 

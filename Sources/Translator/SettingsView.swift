@@ -11,6 +11,7 @@ struct SettingsView: View {
     @AppStorage("apiEndpoint") private var apiEndpoint = "http://localhost:1234/v1"
     @AppStorage("selectedModel") private var selectedModel = "local-model"
     @AppStorage("temperature") private var temperature = 0.2
+    @AppStorage("apiKey") private var apiKey = ""
 
     @StateObject private var state = SettingsState()
 
@@ -31,6 +32,22 @@ struct SettingsView: View {
                                 }
                             }
                         Text("Point this to your running local model server (e.g. LM Studio, Ollama).")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+
+                    // API Key Input
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("API Key (Optional)")
+                            .font(.headline)
+                        SecureField("Enter API Key (e.g. sk-...)", text: $apiKey)
+                            .textFieldStyle(.roundedBorder)
+                            .onChange(of: apiKey) { _ in
+                                Task {
+                                    await fetchModels()
+                                }
+                            }
+                        Text("Required for cloud APIs like DeepSeek (Base URL: https://api.deepseek.com/v1).")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -101,7 +118,7 @@ struct SettingsView: View {
             }
         }
         .padding(20)
-        .frame(width: 450, height: 350)
+        .frame(width: 450, height: 420)
         .onAppear {
             NSApp.activate(ignoringOtherApps: true)
             Task {

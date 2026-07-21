@@ -29,7 +29,9 @@ To build and run this application successfully, please ensure your setup meets t
 
 ## Features
 
-- **Local Translation:** Translates text offline using LM Studio as the LLM backend.
+- **Local & Cloud Translation:** Translates text using LM Studio as the local LLM backend, or any OpenAI-compatible cloud service like DeepSeek.
+- **Detailed Explanation (详解) Mode:** Breaks down words or phrases. For English inputs, it details parts of speech (for single words), listed Chinese meanings, and bilingual example sentences. For Chinese inputs, it offers multiple candidate English translations, explains contextual/nuance differences, and provides bilingual example sentences. Formatting is rendered in rich Markdown (no phonetic symbols).
+- **Authenticated APIs (DeepSeek, etc.):** Supports configuring an optional API Key, which automatically attaches the `Authorization: Bearer <API_KEY>` header to requests, allowing direct integration with services like DeepSeek (`https://api.deepseek.com`).
 - **Offline Text-to-Speech (TTS):** Reads both input text and translation results aloud using macOS native speech synthesis, featuring dynamic icon state changes while speaking.
 - **Automatic Language Detection:** Uses the `NaturalLanguage` framework to automatically identify target language (English/Chinese) and select corresponding voices.
 - **Overlay Window (Spotlight-like):** Activates via a global shortcut and stays anchored at the top-left, expanding downwards naturally during typing.
@@ -62,7 +64,8 @@ The app runs as a menu bar utility. Use `Control + Space` (default) to toggle th
 
 You can open the settings window via the Menu Bar menu.
 
-- **API Base URL**: Configures the connection to your local model server (defaults to `http://localhost:1234/v1` for LM Studio, but supports Ollama, custom ports, etc.).
+- **API Base URL**: Configures the connection to your local model server (defaults to `http://localhost:1234/v1` for LM Studio, but supports Ollama, custom ports, etc.) or cloud APIs (e.g. `https://api.deepseek.com` for DeepSeek).
+- **API Key (Optional)**: Sets the Bearer Token for cloud APIs requiring authentication (e.g. DeepSeek API Key).
 - **Model Selection**: Automatically queries the server (`GET /v1/models`) to retrieve and list all loaded models, allowing you to explicitly select which model to use.
 - **Inference Temperature**: Controls creativity/randomness (defaults to `0.2`).
 - **Thinking/Reasoning**: Automatically strips `<think>...</think>` and `<thought>...</thought>` blocks from output displays, ensuring translation results are always clean.

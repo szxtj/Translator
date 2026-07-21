@@ -73,6 +73,9 @@ struct TranslationService: TranslationServiceProtocol {
         var request = URLRequest(url: endpointURL)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if let apiKey = defaults.string(forKey: "apiKey"), !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        }
 
         var body: [String: Any] = [
             "model": model,
@@ -82,7 +85,7 @@ struct TranslationService: TranslationServiceProtocol {
         if endpointURL.path.contains("responses") {
             body["input"] = Self.makePrompt(for: text, mode: mode)
         } else {
-            let systemPrompt = Self.makeSystemInstruction(for: mode)
+            let systemPrompt = Self.makeSystemInstruction(for: mode, text: text)
             body["messages"] = [
                 ["role": "system", "content": systemPrompt],
                 ["role": "user", "content": text]
@@ -117,6 +120,11 @@ struct TranslationService: TranslationServiceProtocol {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
 
+        let defaults = UserDefaults.standard
+        if let apiKey = defaults.string(forKey: "apiKey"), !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        }
+
         let (data, response) = try await session.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, (200..<300).contains(httpResponse.statusCode) else {
             throw TranslationServiceError.invalidResponse
@@ -135,38 +143,94 @@ struct TranslationService: TranslationServiceProtocol {
     }
 
     static func makePrompt(for text: String, mode: TranslationMode) -> String {
-        let instruction: String
-
         switch mode {
         case .auto:
-            instruction = "Detect the language of the following text and translate it to the other language between Simplified Chinese and English."
+            return """
+            Detect the language of the following text and translate it to the other language between Simplified Chinese and English.
+            Return only the translation result.
+            Do not explain anything.
+
+            Text:
+            \(text)
+            """
         case .zhToEn:
-            instruction = "Translate the following Chinese text into natural English."
+            return """
+            Translate the following Chinese text into natural English.
+            Return only the translation result.
+            Do not explain anything.
+
+            Text:
+            \(text)
+            """
         case .enToZh:
-            instruction = "Translate the following English text into natural Simplified Chinese."
+            return """
+            Translate the following English text into natural Simplified Chinese.
+            Return only the translation result.
+            Do not explain anything.
+
+            Text:
+            \(text)
+            """
+        case .detail:
+            if containsChinese(text) {
+                return """
+                你是一个多角度翻译与例句助手。请分析输入的中文内容：
+                1. 列出该中文对应的一至多个最常用、最可能的英文单词或短语（分点列出）。
+                2. 对于每一个候选英文单词或短语，提供：
+                   - 词性 (Part of speech，若为单单词则提供)
+                   - 语境释义 (简要说明在何种语境下使用该词/短语)
+                   - 英文例句及对应的中文翻译 (提供至少一个高质量的双语对照例句)
+
+                注意约束：
+                - 绝对不要输出任何音标。
+                - 只输出 Markdown 格式的排版结果，不要包含任何前言介绍、解释性废话或代码块。
+
+                输入内容：
+                \(text)
+                """
+            } else {
+                return """
+                你是一个词汇解析助手。请分析输入的英文内容：
+                1. 判断输入是单个单词还是短语。如果是单个单词，请给出词性（如：n. / v. / adj.）；如果是短语或词组，请忽略并不要输出词性。
+                2. 以无序列表（分点）形式给出多个准确的中文释义。
+                3. 针对该单词或短语，提供 2-3 个生动实用的英文例句，并附带对应的中文翻译。
+
+                注意约束：
+                - 绝对不要输出任何音标。
+                - 只输出 Markdown 格式的排版结果，不要包含任何前言介绍、解释性废话或代码块。
+
+                输入内容：
+                \(text)
+                """
+            }
         }
-
-        return """
-        \(instruction)
-        Return only the translation result.
-        Do not explain anything.
-
-        Text:
-        \(text)
-        """
     }
 
-    static func makeSystemInstruction(for mode: TranslationMode) -> String {
-        let instruction: String
+    static func makeSystemInstruction(for mode: TranslationMode, text: String) -> String {
         switch mode {
         case .auto:
-            instruction = "Detect the language of the text and translate it to the other language between Simplified Chinese and English."
+            return "Detect the language of the text and translate it to the other language between Simplified Chinese and English. Output ONLY the clean translation result, with absolutely no explanation, reasoning process, formatting, introduction, or repeating."
         case .zhToEn:
-            instruction = "Translate the Chinese text into natural English."
+            return "Translate the Chinese text into natural English. Output ONLY the clean translation result, with absolutely no explanation, reasoning process, formatting, introduction, or repeating."
         case .enToZh:
-            instruction = "Translate the English text into natural Simplified Chinese."
+            return "Translate the English text into natural Simplified Chinese. Output ONLY the clean translation result, with absolutely no explanation, reasoning process, formatting, introduction, or repeating."
+        case .detail:
+            if containsChinese(text) {
+                return "你是一个多角度翻译与例句助手。请分析输入的中文内容，提供其对应的多种英文单词或短语（分点列出），并针对每一个候选词/短语注明词性（若是单单词）、语境释义差异，以及附带高质量的英文例句与中文翻译。绝对不要输出任何音标。只输出 Markdown 格式的排版结果，不要包含任何前言介绍、解释性废话或将结果包裹在代码块中。"
+            } else {
+                return "你是一个词汇解析助手。请分析输入的英文内容。如果是单个单词，请给出词性（如：n. / v. 等）；如果是短语/词组，则忽略并不要输出词性。以无序列表分点形式给出多个准确的中文释义。针对该词汇，提供 2-3 个英文例句并附带对应的中文翻译。绝对不要输出任何音标。只输出 Markdown 格式的排版结果，不要包含任何前言介绍、解释性废话或将结果包裹在代码块中。"
+            }
         }
-        return "\(instruction) Output ONLY the clean translation result, with absolutely no explanation, reasoning process, formatting, introduction, or repeating."
+    }
+
+    private static func containsChinese(_ text: String) -> Bool {
+        return text.unicodeScalars.contains { scalar in
+            let value = scalar.value
+            return (value >= 0x4E00 && value <= 0x9FFF) ||
+                   (value >= 0x3400 && value <= 0x4DBF) ||
+                   (value >= 0x20000 && value <= 0x2A6DF) ||
+                   (value >= 0xF900 && value <= 0xFAFF)
+        }
     }
 
     static func stripThinkingProcess(_ text: String) -> String {

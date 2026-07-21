@@ -17,6 +17,29 @@ final class TranslationServiceTests: XCTestCase {
         XCTAssertTrue(prompt.contains("Chinese text into natural English"))
     }
 
+    func testBuildsDetailPromptForEnglish() {
+        let prompt = TranslationService.makePrompt(for: "apple", mode: .detail)
+
+        XCTAssertTrue(prompt.contains("词汇解析助手"))
+        XCTAssertTrue(prompt.contains("词性"))
+        XCTAssertTrue(prompt.contains("中文释义"))
+        XCTAssertTrue(prompt.contains("例句"))
+        XCTAssertTrue(prompt.contains("apple"))
+        XCTAssertFalse(prompt.contains("音标"))
+        XCTAssertFalse(prompt.contains("Return only the translation result."))
+    }
+
+    func testBuildsDetailPromptForChinese() {
+        let prompt = TranslationService.makePrompt(for: "苹果", mode: .detail)
+
+        XCTAssertTrue(prompt.contains("翻译与例句助手"))
+        XCTAssertTrue(prompt.contains("英文单词或短语"))
+        XCTAssertTrue(prompt.contains("例句"))
+        XCTAssertTrue(prompt.contains("苹果"))
+        XCTAssertFalse(prompt.contains("音标"))
+        XCTAssertFalse(prompt.contains("Return only the translation result."))
+    }
+
     func testExtractsOutputTextField() throws {
         let data = #"{"output_text":"Hello world"}"#.data(using: .utf8)!
 

@@ -4,6 +4,7 @@ enum TranslationMode: String, CaseIterable, Identifiable, Sendable {
     case auto
     case zhToEn
     case enToZh
+    case detail
 
     var id: String { rawValue }
 
@@ -15,6 +16,8 @@ enum TranslationMode: String, CaseIterable, Identifiable, Sendable {
             return "中→英"
         case .enToZh:
             return "英→中"
+        case .detail:
+            return "详解"
         }
     }
 }

@@ -65,7 +65,7 @@ struct MainView: View {
                 }
 
                 ScrollView {
-                    Text(viewModel.outputText.isEmpty ? "Translation result will appear here." : viewModel.outputText)
+                    Text(renderedOutput)
                         .foregroundStyle(viewModel.outputText.isEmpty ? .secondary : .primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .textSelection(.enabled)
@@ -121,6 +121,20 @@ struct MainView: View {
         }
         .onChange(of: viewModel.errorMessage) { _ in
             reportPreferredHeight()
+        }
+    }
+
+    private var renderedOutput: AttributedString {
+        guard !viewModel.outputText.isEmpty else {
+            return AttributedString("Translation result will appear here.")
+        }
+        do {
+            return try AttributedString(
+                markdown: viewModel.outputText,
+                options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)
+            )
+        } catch {
+            return AttributedString(viewModel.outputText)
         }
     }
 
